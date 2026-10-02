@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+.DS_Store
+staff_chat.txt
+corrections.jsonl
+# private working notes and the original task brief (not ours to publish)
+CLAUDE_CODE_BRIEF*.md
+candidate_pack/TASK_BRIEF.md
+report/
+*.pdf

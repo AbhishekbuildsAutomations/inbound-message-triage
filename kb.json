@@ -1,0 +1,24 @@
+{
+  "_note": "PLACEHOLDER demo facts. The task gave us no opening hours or policies, so these stand in to show a grounded auto-reply. There are deliberately NO prices or fees here: the bot must never quote a price it was not given. Replace with real brand facts before any real use.",
+  "vitalis-wellness": [
+    "Vitalis Wellness sells supplements online (capsules, protein, ashwagandha and similar).",
+    "Subscriptions can be cancelled at any time; a team member confirms the cancellation.",
+    "Refunds and replacements are handled by a team member, never automatically.",
+    "We cannot give medical advice. Questions about medicines, dosage or health conditions go to a qualified team member.",
+    "Wholesale and bulk enquiries are handled by the sales team."
+  ],
+  "hair-studio": [
+    "The salon is open Tuesday to Sunday, 10:00 to 20:00. It is closed on Mondays.",
+    "Services include haircuts, colour, balayage (on all hair colours including dark hair) and keratin treatments.",
+    "Prices are quoted by the front desk, because they depend on hair length and condition.",
+    "Membership is per person and cannot be shared.",
+    "Appointment changes are confirmed by the front desk."
+  ],
+  "voyage-travel": [
+    "Voyage Travel books flights and holidays, mainly between Canada and India.",
+    "Date changes depend on the airline's fare rules. A consultant checks any fee before anything is changed.",
+    "Wheelchair and other airport assistance can be requested through us at booking time.",
+    "Payments are only taken through a link sent by a named consultant.",
+    "For travellers stranded mid-journey, the on-call consultant phones back."
+  ]
+}
