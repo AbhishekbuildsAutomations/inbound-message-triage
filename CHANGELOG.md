@@ -75,7 +75,7 @@ What changed and why, newest first.
 - *Plain text only* when sending: customer text can never be interpreted as formatting.
 - *When a human takes over, the customer gets a fixed holding line*, never the draft. An injection attempt gets no reply at all.
 - *Bot-alone actions are also posted to staff* as FYI cards, so a time-sensitive case is still visible.
-- *Two intent definitions sharpened* (`general_question` vs `sales_enquiry`) after MSG-003 flipped in 2 of 6 runs. "How much roughly?" matched both definitions as written; the fix was to the definitions, not a special case for that message. Four runs after the change: 25/25 each.
+- *Two intent definitions sharpened* (`general_question` vs `sales_enquiry`) after MSG-003 flipped in 2 of 5 runs. "How much roughly?" matched both definitions as written; the fix was to the definitions, not a special case for that message. Four runs after the change: 25/25 each.
 
 **Verified**
 - Simulated a full conversation with fake Telegram updates and the real model: brand pick, auto-reply, clarifying question, follow-up using history, staff reply relay, wrong-call log, injection (no reply), sticker.
