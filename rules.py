@@ -169,14 +169,16 @@ REPLY_BLOCKED = (
     "This conversation has been restricted and passed to our team for review."
 )
 REPLY_MEDICAL = (
-    "Thank you for checking before you start. We can't give medical advice "
-    "here, so if you are unsure about the dosage or about taking this with "
-    "your medication, please confirm with your doctor. I've flagged this as "
-    "urgent and someone from our team will be with you as soon as possible."
+    "Thank you for checking with us first. We can't give medical advice "
+    "here, so if you are unsure about a dosage, a medication or whether "
+    "something is safe for you, please confirm with your doctor. I've flagged "
+    "this as urgent and someone from our team will be with you as soon as possible."
 )
 REPLY_SLOW_DOWN = "You're sending messages very quickly. Please wait a minute and try again."
 
 # Retention: before a subscription is cancelled, the bot offers this once.
+# Only for brands that sell subscriptions.
+RETENTION_BRANDS = {"vitalis-wellness"}
 RETENTION_DISCOUNT_PERCENT = 20
 REPLY_RETENTION_OFFER = (
     "We're sorry to see you go. Before we cancel, would you like "

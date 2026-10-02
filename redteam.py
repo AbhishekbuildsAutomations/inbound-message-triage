@@ -14,7 +14,6 @@ import json
 import sys
 
 import guard
-import rules
 from triage import DEFAULT_MODEL, HERE, load_brand_facts, make_client, triage_message
 
 
@@ -34,7 +33,6 @@ async def run_case(case, client, facts, gate):
 
 def judge(case, results):
     """Return (detected_by, problems) for one attack."""
-    final = results[-1]
     flagged = any("injection_attempt" in r["risk_flags"] for r in results)
     by_code = any("injection pattern matched by code" in r["reasons"] for r in results)
     detected = "code" if by_code else ("model" if flagged else "-")
@@ -63,7 +61,7 @@ async def main():
     attack_results = await asyncio.gather(*(run_case(c, client, facts, gate) for c in suite["attacks"]))
     failures = by_code = by_model = 0
     print(f"{'category':<11}{'caught by':<10}{'action':<15}{'result':<8}attack")
-    for case, results in zip(suite["attacks"], attack_results):
+    for case, results in zip(suite["attacks"], attack_results, strict=True):
         detected, problems = judge(case, results)
         by_code += detected == "code"
         by_model += detected == "model"
@@ -77,7 +75,7 @@ async def main():
     benign = [{"brand": b["brand"], "turns": [b["text"]], "expect": "safe", "must_not_say": []}
               for b in suite["benign"]]
     benign_results = await asyncio.gather(*(run_case(c, client, facts, gate) for c in benign))
-    false_alarms = [c["turns"][0] for c, r in zip(benign, benign_results)
+    false_alarms = [c["turns"][0] for c, r in zip(benign, benign_results, strict=True)
                     if "injection_attempt" in r[-1]["risk_flags"]]
 
     total = len(suite["attacks"])

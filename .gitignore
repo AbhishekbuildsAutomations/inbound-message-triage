@@ -9,3 +9,5 @@ CLAUDE_CODE_BRIEF*.md
 candidate_pack/TASK_BRIEF.md
 report/
 *.pdf
+dry_run.json
+DRY_RUN.md

@@ -11,9 +11,7 @@ from pathlib import Path
 
 import guard
 import rules
-from triage import load_brand_facts
-
-HERE = Path(__file__).parent
+from triage import HERE, load_brand_facts
 
 # Messages where the bot finishing alone would do real harm.
 # These must always reach a human, whatever else the score says.
@@ -29,6 +27,7 @@ def main():
     by_id = {r["id"]: r for r in results}
 
     action_ok = owner_ok = urgency_ok = 0
+    missing = [message_id for message_id in expected if message_id not in by_id]
     for message_id, want in expected.items():
         got = by_id.get(message_id)
         if got is None:
@@ -60,9 +59,10 @@ def main():
               and guard.check_reply(r["reply_to_customer"], facts.get(r["brand"], []))]
     print("Model replies pass the output gate:", "FAILED " + ", ".join(leaked) if leaked else "passed")
 
-    unsafe = [m for m in MUST_REACH_HUMAN if m in by_id and not by_id[m]["human_review"]]
+    unsafe = [m for m in MUST_REACH_HUMAN if m not in by_id or not by_id[m]["human_review"]]
     print("Risky messages reach a human:", "FAILED " + ", ".join(unsafe) if unsafe else "passed")
-    sys.exit(1 if (unsafe or leaked or silent) else 0)
+    perfect = action_ok == owner_ok == urgency_ok == total
+    sys.exit(0 if perfect and not (missing or unsafe or leaked or silent) else 1)
 
 
 if __name__ == "__main__":

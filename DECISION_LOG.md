@@ -11,8 +11,8 @@
 ## Where this breaks
 
 - **No sender or thread ID in the data.** MSG-007 and MSG-012 are only unanswerable because context is missing, and MSG-011's "third time writing" cannot be checked.
-- **Injection detection is not complete.** Code and the model caught 43 to 45 of 55 attacks in my suite; the rest were social-engineering messages that went to a human. A persistent attacker will get past detection. What holds is structural: no actions, and a code check on every reply.
-- **The injection warning is harsh.** A false alarm sends it to a real customer. I measured 0 in 20 look-alike messages, a small sample.
+- **Injection detection is not complete.** Code and the model caught 48 to 49 of 59 attacks in my suite; the rest were social-engineering messages that went to a human or got a harmless question. A persistent attacker will get past detection. What holds is structural: no actions, and a code check on every reply.
+- **The injection warning is harsh.** A false alarm sends it to a real customer. An independent review found 15 ordinary phrases my first patterns flagged; I rewrote them and now test 60 look-alike phrases, which is still a small sample.
 - **The answer key is my own judgment.** 25/25 means it matches what I think is right on 25 messages. The 0.7 confidence threshold is a starting point, not tuned.
 - **Attachments are invisible.** MSG-021 and MSG-024 are flagged for a person, not read.
 - **A model update can shift results.** `evaluate.py` and `redteam.py` exist to catch that.

@@ -12,13 +12,13 @@
       "route_internal": 3,
       "auto_reply": 1
     },
-    "input_tokens": 47998,
-    "output_tokens": 7167,
-    "cached_tokens": 47932,
-    "cost_usd": 0.008383,
-    "cost_per_1000_usd": 0.3353,
-    "wall_seconds": 12.2,
-    "avg_seconds_per_call": 4.55
+    "input_tokens": 49868,
+    "output_tokens": 7719,
+    "cached_tokens": 49802,
+    "cost_usd": 0.008846,
+    "cost_per_1000_usd": 0.3538,
+    "wall_seconds": 14.8,
+    "avg_seconds_per_call": 5.23
   },
   "results": [
     {
@@ -35,13 +35,13 @@
       "reasons": [
         "order_status needs a team member to act"
       ],
-      "summary": "The customer says tracking for order VW-48812, containing magnesium capsules ordered on the 22nd, has not moved for four days and asks us to check.",
+      "summary": "The sender asks for an update on order VW-48812 because tracking for their magnesium capsules has not moved in four days.",
       "language": "English",
-      "sentiment": "negative",
+      "sentiment": "neutral",
       "intents": [
         {
           "type": "order_status",
-          "what_they_want": "They want the team to check why tracking for their order has not moved.",
+          "what_they_want": "They want someone to check the tracking status of order VW-48812.",
           "confidence": 0.98,
           "action": "handoff",
           "owner": "support"
@@ -56,7 +56,7 @@
         {
           "type": "date",
           "value": "22nd",
-          "normalized": null
+          "normalized": "2026-09-22"
         },
         {
           "type": "order_id",
@@ -65,15 +65,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi, I’m sorry the tracking for order VW-48812 hasn’t moved for four days. Someone from our team will be with you shortly to look into it.",
+      "reply_to_customer": "Hi, sorry that tracking for your magnesium capsules on order VW-48812 hasn’t moved in four days. Someone from our team will be with you shortly to check.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2189,
-        "output_tokens": 313,
-        "cached_tokens": 2186,
-        "seconds": 5.14
+        "input_tokens": 2274,
+        "output_tokens": 312,
+        "cached_tokens": 2271,
+        "seconds": 4.14
       }
     },
     {
@@ -85,40 +85,27 @@
       "action": "ask_customer",
       "owner": "billing",
       "human_review": false,
-      "confidence": 0.92,
+      "confidence": 0.99,
       "urgency": "normal",
       "reasons": [
-        "2 intents, most cautious is subscription_cancel",
         "cancellation request, retention offer made first"
       ],
-      "summary": "The sender asks to cancel their subscription because they do not use the product enough to justify the monthly charge.",
+      "summary": "The sender asks to cancel their subscription because they are not using the product enough, while noting the quality was fine.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "subscription_cancel",
-          "what_they_want": "Cancel their subscription.",
+          "what_they_want": "They want their subscription cancelled.",
           "confidence": 0.99,
           "action": "handoff",
           "owner": "billing"
-        },
-        {
-          "type": "positive_feedback",
-          "what_they_want": "They say the product quality was fine.",
-          "confidence": 0.92,
-          "action": "thank_and_log",
-          "owner": "support"
         }
       ],
       "entities": [
         {
           "type": "product_or_service",
           "value": "subscription",
-          "normalized": null
-        },
-        {
-          "type": "product_or_service",
-          "value": "product",
           "normalized": null
         }
       ],
@@ -128,10 +115,10 @@
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2185,
-        "output_tokens": 294,
-        "cached_tokens": 2182,
-        "seconds": 4.65
+        "input_tokens": 2270,
+        "output_tokens": 284,
+        "cached_tokens": 2267,
+        "seconds": 4.43
       }
     },
     {
@@ -143,19 +130,19 @@
       "action": "handoff",
       "owner": "salon_front_desk",
       "human_review": true,
-      "confidence": 0.98,
-      "urgency": "normal",
+      "confidence": 0.97,
+      "urgency": "low",
       "reasons": [
         "bot may not finish alone: answer is not in the brand facts"
       ],
-      "summary": "The sender asks whether balayage is available on dark hair, asks for an approximate price, and mentions possibly booking before Diwali.",
+      "summary": "The sender asks whether the salon offers balayage on dark hair and roughly what it costs, while considering booking before Diwali.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "general_question",
-          "what_they_want": "To know whether balayage is offered on dark hair and how much it roughly costs.",
-          "confidence": 0.98,
+          "what_they_want": "To know whether balayage is available on dark hair and how pricing works.",
+          "confidence": 0.97,
           "action": "auto_reply",
           "owner": "salon_front_desk"
         }
@@ -167,7 +154,7 @@
           "normalized": null
         },
         {
-          "type": "product_or_service",
+          "type": "other",
           "value": "dark hair",
           "normalized": null
         },
@@ -178,15 +165,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi! Yes, we do balayage on all hair colours, including dark hair. Prices depend on hair length and condition, so the front desk can quote you. Someone from the team will be with you shortly.",
+      "reply_to_customer": "Hi! Yes, we offer balayage on dark hair. Prices are quoted by the front desk and depend on hair length and condition, so someone from the team will be with you shortly.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2174,
-        "output_tokens": 392,
-        "cached_tokens": 2171,
-        "seconds": 5.43
+        "input_tokens": 2259,
+        "output_tokens": 470,
+        "cached_tokens": 2256,
+        "seconds": 7.02
       }
     },
     {
@@ -198,27 +185,27 @@
       "action": "ask_customer",
       "owner": "travel_ops",
       "human_review": false,
-      "confidence": 0.99,
+      "confidence": 0.97,
       "urgency": "high",
       "reasons": [
         "2 intents, most cautious is booking_change",
         "cannot act without more information from the sender"
       ],
-      "summary": "The sender wants to change their return flight from October 14 to October 21 and asks whether there will be a change fee.",
+      "summary": "The sender wants to change their return flight from Oct 14 to Oct 21 and asks whether a fee applies.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "booking_change",
-          "what_they_want": "Change their return flight from October 14 to October 21.",
+          "what_they_want": "Change their return flight from Oct 14 to Oct 21.",
           "confidence": 0.99,
           "action": "handoff",
           "owner": "travel_ops"
         },
         {
           "type": "general_question",
-          "what_they_want": "Find out whether the flight date change will have a fee.",
-          "confidence": 0.99,
+          "what_they_want": "Ask whether the flight change will incur a fee.",
+          "confidence": 0.97,
           "action": "auto_reply",
           "owner": "travel_ops"
         }
@@ -246,15 +233,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi, I understand you’d like to change your Air Canada return from Oct 14 to Oct 21 (booking VYG9K2M). Change fees depend on the airline’s fare rules, and a consultant will check any fee before anything is changed. Someone from the team will be with you shortly. Would you like us to check this change for you?",
+      "reply_to_customer": "Hi, I understand you’d like to change your return from Oct 14 to Oct 21 (booking ref VYG9K2M). Change fees depend on the airline’s fare rules, and a consultant will check any fee before anything is changed. Someone from our team will be with you shortly. Would you like us to check the fee before you decide whether to make the change?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2183,
-        "output_tokens": 384,
-        "cached_tokens": 2180,
-        "seconds": 4.99
+        "input_tokens": 2268,
+        "output_tokens": 590,
+        "cached_tokens": 2265,
+        "seconds": 14.73
       }
     },
     {
@@ -294,28 +281,28 @@
       "action": "handoff",
       "owner": "salon_front_desk",
       "human_review": true,
-      "confidence": 0.98,
+      "confidence": 0.91,
       "urgency": "high",
       "reasons": [
         "2 intents, most cautious is booking_change",
         "booking_change needs a team member to act"
       ],
-      "summary": "The sender wants to move their Saturday 4 o’clock appointment to Sunday at the same time and asks for the price of a keratin treatment.",
+      "summary": "The sender wants to move a Saturday 4 p.m. appointment to Sunday at the same time and asks for a keratin treatment price.",
       "language": "Hindi-English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "booking_change",
-          "what_they_want": "Move their Saturday 4 o’clock appointment to Sunday at the same time.",
-          "confidence": 0.98,
+          "what_they_want": "Move their Saturday 4 p.m. appointment to Sunday at the same time.",
+          "confidence": 0.99,
           "action": "handoff",
           "owner": "salon_front_desk"
         },
         {
-          "type": "general_question",
-          "what_they_want": "Ask how much a keratin treatment costs.",
-          "confidence": 0.98,
-          "action": "auto_reply",
+          "type": "sales_enquiry",
+          "what_they_want": "Get a price quote for a keratin treatment.",
+          "confidence": 0.91,
+          "action": "handoff",
           "owner": "salon_front_desk"
         }
       ],
@@ -331,9 +318,9 @@
           "normalized": "2026-10-04"
         },
         {
-          "type": "date",
+          "type": "other",
           "value": "4 baje",
-          "normalized": null
+          "normalized": "16:00"
         },
         {
           "type": "product_or_service",
@@ -342,15 +329,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi! Saturday 4 baje wali appointment ko Sunday same time shift karne ki request samajh aa gayi. Appointment changes front desk confirm karta hai, aur keratin treatment ka rate hair length aur condition par depend karta hai. Team se koi shortly aapke saath hoga—please apne hair length aur condition bata dein.",
+      "reply_to_customer": "Hi! Aapki Saturday 4 baje wali appointment ko Sunday same time par shift karne ki request samajh aayi. Appointment changes front desk confirm karta hai. Keratin treatment ka price hair length aur condition par depend karta hai; please apne hair ki length aur condition bata dein. Team se koi aapke saath shortly contact karega.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2187,
-        "output_tokens": 592,
-        "cached_tokens": 2184,
-        "seconds": 6.79
+        "input_tokens": 2272,
+        "output_tokens": 619,
+        "cached_tokens": 2269,
+        "seconds": 8.34
       }
     },
     {
@@ -394,13 +381,13 @@
       "action": "escalate",
       "owner": "billing",
       "human_review": true,
-      "confidence": 0.84,
+      "confidence": 0.88,
       "urgency": "high",
       "reasons": [
         "3 intents, most cautious is refund_request",
         "refund_request always goes to billing"
       ],
-      "summary": "The sender requests a refund for order VW-48190 because the seal was broken, and also wants to order two tubs of chocolate protein with proper packaging.",
+      "summary": "The sender requests a refund for order VW-48190 because it arrived with a broken seal and separately wants to order two tubs of chocolate protein with proper packaging.",
       "language": "English",
       "sentiment": "negative",
       "intents": [
@@ -413,15 +400,15 @@
         },
         {
           "type": "wrong_or_damaged_item",
-          "what_they_want": "Help with a product that arrived with a broken seal.",
-          "confidence": 0.98,
+          "what_they_want": "Help with an item that arrived with a broken seal.",
+          "confidence": 0.99,
           "action": "handoff",
           "owner": "support"
         },
         {
           "type": "new_order",
-          "what_they_want": "To order two tubs of chocolate protein, if they can be shipped with proper packaging.",
-          "confidence": 0.94,
+          "what_they_want": "To order two tubs of chocolate protein, with proper packaging.",
+          "confidence": 0.98,
           "action": "handoff",
           "owner": "sales"
         }
@@ -439,22 +426,22 @@
         },
         {
           "type": "product_or_service",
-          "value": "the protein in chocolate",
+          "value": "protein in chocolate",
           "normalized": null
         }
       ],
       "risk_flags": [
         "product_safety"
       ],
-      "reply_to_customer": "Hi, I’m sorry the seal on your order VW-48190 was broken when it arrived. A team member handles refunds and will be with you shortly. Please send photos of the packaging and seal, along with any other details about how it arrived.",
+      "reply_to_customer": "Hi, I’m sorry order VW-48190 arrived with a broken seal. A team member will review the refund request shortly. Could you send photos of the seal and the item, along with any other details about its condition?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2204,
-        "output_tokens": 471,
-        "cached_tokens": 2201,
-        "seconds": 6.03
+        "input_tokens": 2289,
+        "output_tokens": 422,
+        "cached_tokens": 2286,
+        "seconds": 5.8
       }
     },
     {
@@ -466,19 +453,19 @@
       "action": "handoff",
       "owner": "travel_ops",
       "human_review": true,
-      "confidence": 0.9,
+      "confidence": 0.94,
       "urgency": "high",
       "reasons": [
         "risk flag, so a human is called in: accessibility"
       ],
-      "summary": "The sender is asking about Toronto-to-Amritsar fares in December and arranging wheelchair assistance for their mother and travel for their parents.",
+      "summary": "The sender asks about December fares from Toronto to Amritsar and how to arrange travel for their parents, including wheelchair assistance for their mother.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "sales_enquiry",
-          "what_they_want": "A fare enquiry for travel from Toronto to Amritsar in December, with wheelchair assistance for their mother.",
-          "confidence": 0.9,
+          "what_they_want": "A fare recommendation for December travel from Toronto to Amritsar and guidance on arranging wheelchair assistance.",
+          "confidence": 0.94,
           "action": "handoff",
           "owner": "travel_ops"
         }
@@ -518,15 +505,15 @@
       "risk_flags": [
         "accessibility"
       ],
-      "reply_to_customer": "Hi, we can help with Toronto to Amritsar fares for your parents. Wheelchair and other airport assistance can be requested through us at booking time. Someone from our team will be with you shortly; what are your exact travel dates in December?",
+      "reply_to_customer": "Hi, thanks for reaching out about December fares from Toronto to Amritsar for your parents. Wheelchair assistance can be requested through us at booking time. Someone from our team will be with you shortly to help with the travel options. What exact December travel dates are you considering?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2186,
-        "output_tokens": 426,
-        "cached_tokens": 2183,
-        "seconds": 5.6
+        "input_tokens": 2271,
+        "output_tokens": 458,
+        "cached_tokens": 2268,
+        "seconds": 6.57
       }
     },
     {
@@ -543,13 +530,13 @@
       "reasons": [
         "positive feedback, nothing to do"
       ],
-      "summary": "The sender praises their colour service and says Priya did an amazing job.",
+      "summary": "The sender praises their colour service and says Priya did an amazing job; they plan to post a photo later.",
       "language": "English",
       "sentiment": "positive",
       "intents": [
         {
           "type": "positive_feedback",
-          "what_they_want": "Share that they love their colour and praise Priya's work.",
+          "what_they_want": "They are sharing praise for their colour service.",
           "confidence": 0.99,
           "action": "thank_and_log",
           "owner": "salon_front_desk"
@@ -563,15 +550,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi! Thank you so much—we’re so glad you love your colour and had such a great experience with Priya!",
+      "reply_to_customer": "Hi! Thank you so much for the lovely feedback—we’re glad you’re obsessed with your colour!",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2172,
-        "output_tokens": 192,
-        "cached_tokens": 2169,
-        "seconds": 4.05
+        "input_tokens": 2257,
+        "output_tokens": 191,
+        "cached_tokens": 2254,
+        "seconds": 3.33
       }
     },
     {
@@ -583,27 +570,27 @@
       "action": "escalate",
       "owner": "billing",
       "human_review": true,
-      "confidence": 0.98,
+      "confidence": 0.99,
       "urgency": "high",
       "reasons": [
         "2 intents, most cautious is billing_dispute",
         "hard risk flag: payment_dispute"
       ],
-      "summary": "The sender says they have contacted us three times, were charged twice for the same order on the 19th, and want it resolved today or they will contact their bank.",
+      "summary": "The sender says they have contacted us for the third time about being charged twice for the same order on the 19th and threatens to raise it with their bank if it is not resolved today.",
       "language": "English",
       "sentiment": "negative",
       "intents": [
         {
           "type": "billing_dispute",
-          "what_they_want": "They say they were charged twice for the same order and want the issue resolved today.",
+          "what_they_want": "They want the duplicate charge resolved today.",
           "confidence": 0.99,
           "action": "escalate",
           "owner": "billing"
         },
         {
           "type": "complaint",
-          "what_they_want": "They complain that nobody has responded despite three attempts to contact us.",
-          "confidence": 0.98,
+          "what_they_want": "They are complaining that this is their third message and nobody has responded.",
+          "confidence": 0.99,
           "action": "handoff",
           "owner": "support"
         }
@@ -623,15 +610,15 @@
       "risk_flags": [
         "payment_dispute"
       ],
-      "reply_to_customer": "Hi, I’m sorry you’ve had to write three times and that you were charged twice for the same order on the 19th. I’ve flagged this as urgent, and someone from our team will be with you as soon as possible.",
+      "reply_to_customer": "Hello, I’m very sorry you’ve had to write for the third time about being charged twice for the same order on the 19th. I’ve flagged this as urgent, and someone from our team will be with you as soon as possible. Please share your order number so they can look into it.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2205,
-        "output_tokens": 399,
-        "cached_tokens": 2202,
-        "seconds": 5.39
+        "input_tokens": 2290,
+        "output_tokens": 407,
+        "cached_tokens": 2287,
+        "seconds": 4.89
       }
     },
     {
@@ -643,34 +630,34 @@
       "action": "ask_customer",
       "owner": "travel_ops",
       "human_review": false,
-      "confidence": 0.42,
+      "confidence": 0.48,
       "urgency": "normal",
       "reasons": [
         "cannot act without more information from the sender"
       ],
-      "summary": "The sender asks about another item but does not say what they mean.",
+      "summary": "The sender asks about an unspecified other item, with no prior context.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "unclear",
-          "what_they_want": "They are asking about “the other one,” but the reference is unclear.",
-          "confidence": 0.42,
+          "what_they_want": "They want information about an unspecified “other one.”",
+          "confidence": 0.48,
           "action": "ask_customer",
           "owner": "travel_ops"
         }
       ],
       "entities": [],
       "risk_flags": [],
-      "reply_to_customer": "Hi, could you clarify what you mean by “the other one”?",
+      "reply_to_customer": "Hi, I’m not sure which other one you mean. Could you clarify so the team can help?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2155,
-        "output_tokens": 161,
-        "cached_tokens": 2152,
-        "seconds": 4.11
+        "input_tokens": 2240,
+        "output_tokens": 252,
+        "cached_tokens": 2237,
+        "seconds": 5.05
       }
     },
     {
@@ -687,13 +674,13 @@
       "reasons": [
         "wholesale_enquiry always goes to sales"
       ],
-      "summary": "A pharmacy chain in Gujarat wants to discuss bulk pricing and asks who handles wholesale.",
+      "summary": "A chain of 14 pharmacies in Gujarat asks about bulk pricing and who handles wholesale.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "wholesale_enquiry",
-          "what_they_want": "To discuss bulk pricing on the wellness range and find out who handles wholesale.",
+          "what_they_want": "Discuss bulk pricing for their pharmacy chain and identify who handles wholesale.",
           "confidence": 0.99,
           "action": "route_internal",
           "owner": "sales"
@@ -709,23 +696,18 @@
           "type": "location",
           "value": "Gujarat",
           "normalized": null
-        },
-        {
-          "type": "product_or_service",
-          "value": "wellness range",
-          "normalized": null
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hello, thanks for reaching out about bulk pricing for your 14 pharmacies in Gujarat. Our sales team handles wholesale enquiries and will be with you shortly. Please share a contact number so they can follow up.",
+      "reply_to_customer": "Hello, thanks for reaching out about bulk pricing for your 14 pharmacies in Gujarat. Our sales team handles wholesale enquiries and will be with you shortly. Please share a contact number for the discussion.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2187,
-        "output_tokens": 188,
-        "cached_tokens": 2184,
-        "seconds": 2.8
+        "input_tokens": 2272,
+        "output_tokens": 169,
+        "cached_tokens": 2269,
+        "seconds": 3.11
       }
     },
     {
@@ -737,13 +719,13 @@
       "action": "handoff",
       "owner": "salon_front_desk",
       "human_review": true,
-      "confidence": 0.86,
+      "confidence": 0.87,
       "urgency": "high",
       "reasons": [
         "3 intents, most cautious is booking_change",
         "more than 2 intents, so a human reads it"
       ],
-      "summary": "The sender wants to move a Thursday appointment, check whether their sister can book that day if a slot is available, and ask whether membership is shared.",
+      "summary": "The sender wants to move a Thursday appointment, asks whether their sister can book for the same day if a slot is available, and asks if membership covers both of them.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
@@ -756,14 +738,14 @@
         },
         {
           "type": "booking_new",
-          "what_they_want": "Check whether their sister can book an appointment on the same day if a slot is available.",
-          "confidence": 0.96,
+          "what_they_want": "Have their sister book for the same day if a slot is available.",
+          "confidence": 0.97,
           "action": "handoff",
           "owner": "salon_front_desk"
         },
         {
           "type": "general_question",
-          "what_they_want": "Know whether membership covers their sister or is per person.",
+          "what_they_want": "Know whether membership covers their sister too or is per person.",
           "confidence": 0.99,
           "action": "auto_reply",
           "owner": "salon_front_desk"
@@ -782,15 +764,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi! I understand you’d like to move your Thursday appointment and check whether your sister can book that day. Membership is per person and can’t be shared. The front desk confirms appointment changes, and someone from the team will be with you shortly. What date and time would you prefer for your appointment?",
+      "reply_to_customer": "Hi! I can see you’d like to move your Thursday appointment and check availability for your sister that day. Membership is per person, and appointment changes are confirmed by the front desk. Someone from the team will be with you shortly. What date and time would you like to move your appointment to?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2189,
-        "output_tokens": 506,
-        "cached_tokens": 2186,
-        "seconds": 5.67
+        "input_tokens": 2274,
+        "output_tokens": 589,
+        "cached_tokens": 2271,
+        "seconds": 7.03
       }
     },
     {
@@ -813,7 +795,7 @@
       "intents": [
         {
           "type": "wrong_or_damaged_item",
-          "what_they_want": "Help resolving the wrong strength item received for order VW-48655.",
+          "what_they_want": "Help with an incorrect item received for order VW-48655.",
           "confidence": 0.99,
           "action": "handoff",
           "owner": "support"
@@ -821,12 +803,12 @@
       ],
       "entities": [
         {
-          "type": "product_or_service",
+          "type": "amount",
           "value": "500mg",
           "normalized": null
         },
         {
-          "type": "product_or_service",
+          "type": "amount",
           "value": "250mg",
           "normalized": null
         },
@@ -839,15 +821,15 @@
       "risk_flags": [
         "product_safety"
       ],
-      "reply_to_customer": "Hi, I’m sorry you received the 250mg item instead of the 500mg you ordered for VW-48655. A team member will be with you shortly to help. Could you share photos of the item and its packaging?",
+      "reply_to_customer": "Hi, I’m sorry you received the 250mg item instead of the 500mg you ordered (VW-48655). A team member will be with you shortly. Could you share photos of the item and packaging?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2182,
-        "output_tokens": 309,
-        "cached_tokens": 2179,
-        "seconds": 4.1
+        "input_tokens": 2267,
+        "output_tokens": 285,
+        "cached_tokens": 2264,
+        "seconds": 3.36
       }
     },
     {
@@ -859,19 +841,19 @@
       "action": "escalate",
       "owner": "emergency_on_call",
       "human_review": true,
-      "confidence": 0.99,
+      "confidence": 0.98,
       "urgency": "critical",
       "reasons": [
         "hard risk flag: safety_urgent"
       ],
-      "summary": "The sender is at Pearson after a cancelled Frankfurt connection, faces a 36-hour wait, and requests an immediate call; an elderly passenger is travelling.",
+      "summary": "The sender reports an urgent flight connection cancellation affecting an elderly traveller and requests an immediate call back.",
       "language": "English",
       "sentiment": "negative",
       "intents": [
         {
           "type": "travel_disruption",
-          "what_they_want": "Immediate help and a phone call about a cancelled connection and long delay.",
-          "confidence": 0.99,
+          "what_they_want": "Urgent help with a cancelled connection and an immediate call back.",
+          "confidence": 0.98,
           "action": "escalate",
           "owner": "emergency_on_call"
         }
@@ -907,15 +889,15 @@
         "accessibility",
         "safety_urgent"
       ],
-      "reply_to_customer": "Hello, I’m sorry your Frankfurt connection was cancelled and you’re facing a 36-hour wait at Pearson, especially with an elderly passenger. I’ve flagged this as urgent, and the on-call consultant will phone you back as soon as possible.",
+      "reply_to_customer": "Hi, I’m sorry your connection in Frankfurt was cancelled and that you’re facing a 36-hour wait with an elderly passenger. I’ve flagged this as urgent, and someone will be with you as soon as possible. Our on-call consultant phones back travellers stranded mid-journey.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2195,
-        "output_tokens": 244,
-        "cached_tokens": 2192,
-        "seconds": 2.91
+        "input_tokens": 2280,
+        "output_tokens": 461,
+        "cached_tokens": 2277,
+        "seconds": 5.59
       }
     },
     {
@@ -927,7 +909,7 @@
       "action": "ask_customer",
       "owner": "support",
       "human_review": false,
-      "confidence": 0.45,
+      "confidence": 0.96,
       "urgency": "normal",
       "reasons": [
         "cannot act without more information from the sender"
@@ -938,23 +920,23 @@
       "intents": [
         {
           "type": "unclear",
-          "what_they_want": "Unsubscribe from something, but it is unclear whether they mean marketing emails or a paid subscription.",
-          "confidence": 0.45,
+          "what_they_want": "Unsubscribe, but it is unclear whether they mean marketing emails or a paid subscription.",
+          "confidence": 0.96,
           "action": "ask_customer",
           "owner": "support"
         }
       ],
       "entities": [],
       "risk_flags": [],
-      "reply_to_customer": "Hi, I can help with that. Do you mean unsubscribe from marketing emails or cancel a paid subscription?",
+      "reply_to_customer": "Hi, I can help with that. A team member will be with you shortly—would you like to unsubscribe from marketing emails or cancel a paid subscription?",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2161,
-        "output_tokens": 259,
-        "cached_tokens": 2158,
-        "seconds": 3.99
+        "input_tokens": 2246,
+        "output_tokens": 275,
+        "cached_tokens": 2243,
+        "seconds": 3.92
       }
     },
     {
@@ -967,7 +949,7 @@
       "owner": "salon_front_desk",
       "human_review": false,
       "confidence": 0.99,
-      "urgency": "low",
+      "urgency": "normal",
       "reasons": [
         "simple, low risk and answered from brand facts"
       ],
@@ -990,10 +972,10 @@
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2162,
-        "output_tokens": 167,
-        "cached_tokens": 2159,
-        "seconds": 2.84
+        "input_tokens": 2247,
+        "output_tokens": 158,
+        "cached_tokens": 2244,
+        "seconds": 2.66
       }
     },
     {
@@ -1005,19 +987,19 @@
       "action": "escalate",
       "owner": "support",
       "human_review": true,
-      "confidence": 1.0,
+      "confidence": 0.99,
       "urgency": "critical",
       "reasons": [
         "hard risk flag: medical"
       ],
-      "summary": "The sender asks whether ashwagandha is safe to take with blood pressure medication before starting it.",
+      "summary": "The sender asks whether ashwagandha is safe to take with blood pressure medication.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "medical_question",
           "what_they_want": "To know whether ashwagandha is safe to take with blood pressure medication.",
-          "confidence": 1.0,
+          "confidence": 0.99,
           "action": "escalate",
           "owner": "support"
         }
@@ -1029,7 +1011,7 @@
           "normalized": null
         },
         {
-          "type": "product_or_service",
+          "type": "other",
           "value": "blood pressure medication",
           "normalized": null
         }
@@ -1037,15 +1019,15 @@
       "risk_flags": [
         "medical"
       ],
-      "reply_to_customer": "Thank you for checking before you start. We can't give medical advice here, so if you are unsure about the dosage or about taking this with your medication, please confirm with your doctor. I've flagged this as urgent and someone from our team will be with you as soon as possible.",
+      "reply_to_customer": "Thank you for checking with us first. We can't give medical advice here, so if you are unsure about a dosage, a medication or whether something is safe for you, please confirm with your doctor. I've flagged this as urgent and someone from our team will be with you as soon as possible.",
       "reply_source": "fixed",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2190,
-        "output_tokens": 266,
-        "cached_tokens": 2187,
-        "seconds": 3.71
+        "input_tokens": 2275,
+        "output_tokens": 283,
+        "cached_tokens": 2272,
+        "seconds": 4.06
       }
     },
     {
@@ -1068,7 +1050,7 @@
       "intents": [
         {
           "type": "ready_to_buy",
-          "what_they_want": "To know the next step and how to pay for the Dubai stopover quote.",
+          "what_they_want": "To know the next step and how to pay for the quoted Dubai stopover.",
           "confidence": 0.97,
           "action": "handoff",
           "owner": "sales"
@@ -1082,20 +1064,20 @@
         },
         {
           "type": "person",
-          "value": "husband",
+          "value": "My husband",
           "normalized": null
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi, glad the timing works for your Dubai stopover. Payments are only taken through a link sent by a named consultant. Someone from our team will be with you shortly to guide you on the next step.",
+      "reply_to_customer": "Hi, glad the timing works for your Dubai stopover. Payments are only taken through a link sent by a named consultant, and someone from our team will be with you shortly about the next steps.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2184,
-        "output_tokens": 421,
-        "cached_tokens": 2181,
-        "seconds": 4.53
+        "input_tokens": 2269,
+        "output_tokens": 382,
+        "cached_tokens": 2266,
+        "seconds": 5.09
       }
     },
     {
@@ -1112,7 +1094,7 @@
       "reasons": [
         "vendor_invoice always goes to finance"
       ],
-      "summary": "The sender submitted an invoice with bank details in an attached PDF and asked for payment to be processed.",
+      "summary": "The sender submitted an invoice and asks for payment to be processed using bank details in the attached PDF.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
@@ -1124,20 +1106,36 @@
           "owner": "finance"
         }
       ],
-      "entities": [],
+      "entities": [
+        {
+          "type": "other",
+          "value": "invoice",
+          "normalized": null
+        },
+        {
+          "type": "other",
+          "value": "PDF",
+          "normalized": null
+        },
+        {
+          "type": "other",
+          "value": "Accounts",
+          "normalized": null
+        }
+      ],
       "risk_flags": [
         "attachment_mentioned",
         "possible_fraud"
       ],
-      "reply_to_customer": "Hello, thanks for sending the invoice. A team member will review it and be with you shortly.",
+      "reply_to_customer": "Hello, thanks for sending the invoice. Someone from the team will review it and be with you shortly.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2183,
-        "output_tokens": 292,
-        "cached_tokens": 2180,
-        "seconds": 4.89
+        "input_tokens": 2268,
+        "output_tokens": 285,
+        "cached_tokens": 2265,
+        "seconds": 4.0
       }
     },
     {
@@ -1149,19 +1147,19 @@
       "action": "ask_customer",
       "owner": "salon_front_desk",
       "human_review": false,
-      "confidence": 0.83,
+      "confidence": 0.67,
       "urgency": "high",
       "reasons": [
         "cannot act without more information from the sender"
       ],
-      "summary": "The sender says work has come up and may need to change their appointment tomorrow at 11am.",
+      "summary": "The sender says work came up and they may need to change their appointment tomorrow at 11am, but does not specify what they want to change.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "booking_change",
-          "what_they_want": "They may need to change their appointment and need to clarify whether they want another date or time.",
-          "confidence": 0.83,
+          "what_they_want": "Possibly change their appointment; they have not specified whether they want another date or time.",
+          "confidence": 0.67,
           "action": "handoff",
           "owner": "salon_front_desk"
         }
@@ -1173,21 +1171,21 @@
           "normalized": "2026-09-29"
         },
         {
-          "type": "date",
+          "type": "other",
           "value": "11am",
-          "normalized": "2026-09-29T11:00:00"
+          "normalized": "11:00"
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi, sorry work came up with your appointment tomorrow at 11am. Would you like to change it to another date or time? The front desk confirms appointment changes, and someone from the team will be with you shortly.",
+      "reply_to_customer": "Hi, sorry work came up for your appointment tomorrow at 11am. Would you like to change the date or the time? Someone from the team will be with you shortly; the front desk confirms appointment changes.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2170,
-        "output_tokens": 454,
-        "cached_tokens": 2167,
-        "seconds": 5.0
+        "input_tokens": 2255,
+        "output_tokens": 394,
+        "cached_tokens": 2252,
+        "seconds": 4.93
       }
     },
     {
@@ -1204,13 +1202,13 @@
       "reasons": [
         "positive feedback, nothing to do"
       ],
-      "summary": "The sender thanks Vitalis Wellness and praises the improved packaging on order VW-47203.",
+      "summary": "The sender thanks Vitalis Wellness and praises the improved packaging for order VW-47203.",
       "language": "English",
       "sentiment": "positive",
       "intents": [
         {
           "type": "positive_feedback",
-          "what_they_want": "They are expressing thanks and positive feedback about the packaging.",
+          "what_they_want": "They are sharing thanks and positive feedback about the packaging.",
           "confidence": 0.99,
           "action": "thank_and_log",
           "owner": "support"
@@ -1229,15 +1227,15 @@
         }
       ],
       "risk_flags": [],
-      "reply_to_customer": "Hi, thanks for letting us know! We’re glad the packaging was much better this time.",
+      "reply_to_customer": "Hi, thank you for sharing this! We’re glad the packaging for order VW-47203 was much better this time.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2178,
-        "output_tokens": 223,
-        "cached_tokens": 2175,
-        "seconds": 4.24
+        "input_tokens": 2263,
+        "output_tokens": 224,
+        "cached_tokens": 2260,
+        "seconds": 3.43
       }
     },
     {
@@ -1249,29 +1247,24 @@
       "action": "route_internal",
       "owner": "hr",
       "human_review": true,
-      "confidence": 0.99,
+      "confidence": 0.97,
       "urgency": "normal",
       "reasons": [
         "job_application always goes to hr"
       ],
-      "summary": "The sender is applying for a travel consultant opening, has five years of Amadeus experience, is based in Gurgaon, and mentions an attached resume.",
+      "summary": "The sender is asking about travel consultant job openings and mentions five years of Amadeus experience, Gurgaon, and an attached resume.",
       "language": "English",
       "sentiment": "neutral",
       "intents": [
         {
           "type": "job_application",
-          "what_they_want": "To be considered for a travel consultant opening.",
-          "confidence": 0.99,
+          "what_they_want": "To inquire about travel consultant openings and be considered for a role.",
+          "confidence": 0.97,
           "action": "route_internal",
           "owner": "hr"
         }
       ],
       "entities": [
-        {
-          "type": "person",
-          "value": "travel consultant",
-          "normalized": null
-        },
         {
           "type": "other",
           "value": "5 years with Amadeus",
@@ -1281,20 +1274,25 @@
           "type": "location",
           "value": "Gurgaon",
           "normalized": null
+        },
+        {
+          "type": "other",
+          "value": "Resume attached",
+          "normalized": null
         }
       ],
       "risk_flags": [
         "attachment_mentioned"
       ],
-      "reply_to_customer": "Hello, thanks for reaching out about a travel consultant opening and for sharing your experience with Amadeus. Someone from our careers team will be with you shortly. I’m unable to view the attached resume here; please send it again or include your relevant details in your reply.",
+      "reply_to_customer": "Hello, thanks for reaching out about travel consultant openings and sharing your Amadeus experience and Gurgaon location. Someone from our careers team will be with you shortly. We can’t view the resume attachment here; please share your resume details in your reply.",
       "reply_source": "model",
       "llm": {
         "status": "ok",
         "model": "gpt-6-luna",
-        "input_tokens": 2177,
-        "output_tokens": 214,
-        "cached_tokens": 2174,
-        "seconds": 3.26
+        "input_tokens": 2262,
+        "output_tokens": 209,
+        "cached_tokens": 2259,
+        "seconds": 3.55
       }
     },
     {

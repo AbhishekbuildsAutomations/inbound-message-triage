@@ -6,7 +6,7 @@ A small service that reads inbound customer messages (WhatsApp, email, Instagram
 - what useful details are in the message
 - what happens next, who handles it, and how urgently
 
-Every sender gets an immediate reply. A human is called in whenever the message involves risk, money, or work only a person can do.
+Every readable message gets an immediate reply. A human is called in whenever the message involves risk, money, or work only a person can do.
 
 **Read first:** [DECISION_LOG.md](DECISION_LOG.md) (one page). The run output for the 25 sample messages is in [RESULTS.md](RESULTS.md).
 
@@ -73,7 +73,7 @@ python triage.py candidate_pack/messages.json
 python evaluate.py
 ```
 
-`triage.py` writes `results.json` (for programs) and `RESULTS.md` (for people). `evaluate.py` scores the run against a hand-written answer key in `expected.json` and fails if a risky message would skip a human.
+`triage.py` writes `results.json` (for programs) and `RESULTS.md` (for people). A dry run writes `dry_run.json` instead, so it never overwrites a live run. `evaluate.py` scores the run against a hand-written answer key in `expected.json`; it fails on any mismatch, a missing message, a risky message that would skip a human, or a reply that breaks the output gate.
 
 ### Keys you supply
 
@@ -123,18 +123,18 @@ Measured on the 25 sample messages, 2 October 2026:
 | Item | Value |
 |---|---|
 | Model calls | 22 of 25 messages (3 are handled by code alone) |
-| Tokens per call | about 2,180 input and 330 output |
+| Tokens per call | about 2,270 input and 350 output |
 | Price (`gpt-6-luna`) | $0.10 per 1M input tokens, $0.50 per 1M output tokens |
-| **Cost per 1,000 messages** | **$0.34** |
-| Cost at 10,000 a day | about $3.35 a day, about $100 a month |
-| Time per model call | about 4.5 seconds; 25 messages finish in about 12 seconds at 10 calls in parallel |
+| **Cost per 1,000 messages** | **$0.35** |
+| Cost at 10,000 a day | about $3.54 a day, about $106 a month |
+| Time per model call | about 5 seconds; 25 messages finish in about 15 seconds at 10 calls in parallel |
 
-How the number is built: (47,998 input tokens × $0.10 + 7,167 output tokens × $0.50) ÷ 1,000,000 = $0.0084 for 25 messages, which is $0.34 per 1,000.
+How the number is built: (49,868 input tokens × $0.10 + 7,719 output tokens × $0.50) ÷ 1,000,000 = $0.0088 for 25 messages, which is $0.35 per 1,000.
 
 Assumptions:
 
 - Real traffic looks like the sample: similar message length, and about 12% of messages need no model call.
-- Every input token is billed at the full price. Most of each prompt is the same instruction block, which OpenAI bills at 10% when it is served from its prompt cache. If that block is always cached the cost falls to roughly $0.17 per 1,000. I quote the uncached figure because cache hits are not guaranteed.
+- Every input token is billed at the full price. Most of each prompt is the same instruction block, which OpenAI bills at 10% when it is served from its prompt cache. If that block is always cached the cost falls to roughly $0.18 per 1,000. I quote the uncached figure because cache hits are not guaranteed.
 - No retries. A failed call is retried, which would add cost in proportion to the failure rate (0 failures in every run so far).
 - Standard processing. The Batch API is 50% cheaper but can take up to 24 hours, which is wrong for a stranded traveller.
 - Price source: https://developers.openai.com/api/docs/pricing, checked 2 October 2026.
@@ -143,8 +143,9 @@ Throughput: 10,000 a day is about 7 messages a minute. The entry-level paid tier
 
 ## Guardrails
 
+- **Field checks** (`triage.py`): only a known brand and channel and a real date reach the model; the message is cleaned first and the scan runs on exactly the text the model will read.
 - **Input scan** (`guard.py`): patterns for instruction override, fake authority, role-play, dictated replies, prompt extraction and fake system markup, in English, Hindi, Hinglish, Spanish, French and German. Text is un-disguised first: look-alike letters, invisible characters, spaced-out letters, leetspeak, scrambled words, base64, hex and ROT13.
-- **Output gate** (`guard.py`): a model-written reply is rejected if it promises or confirms anything, states an amount of money that is not in the brand facts, gives medical advice, contains a link, or leaks the prompt. A rejected reply is replaced by a fixed holding line and a human is called in.
+- **Output gate** (`guard.py`): a model-written reply is rejected if it promises, confirms or agrees to anything, states any amount of money that is not in the brand facts, gives medical advice, contains a link, or leaks the prompt. A rejected reply is replaced by a fixed holding line and a human is called in. The gate is a list of patterns: it stops the common ways a reply goes wrong, it cannot prove a reply is harmless.
 - **Fixed wording** (`rules.py`): the injection warning, the medical reply and the retention offer are written by people, not by the model.
 
 Run the attack suite (needs a key):
@@ -153,7 +154,7 @@ Run the attack suite (needs a key):
 python redteam.py
 ```
 
-It plays 55 attacks from `attacks.json` and 20 normal messages that use similar words. Latest run: no attack produced a harmful reply, and no normal message was treated as an attack. The suite was written from published attack lists, so it is a regression check, not proof that every attack is covered.
+It plays 59 attacks from `attacks.json` and 33 normal messages that use similar words. Latest runs: no attack produced a harmful reply, and no normal message was treated as an attack. `test_triage.py` checks a further 27 look-alike phrases without a key. The suite was written from published attack lists, so it is a regression check, not proof that every attack is covered.
 
 ## Telegram test bench (optional)
 
@@ -164,7 +165,7 @@ It plays 55 attacks from `attacks.json` and 20 normal messages that use similar 
 python bot.py
 ```
 
-In the private chat: `/start` picks a brand, `/replay` pushes the 25 sample messages through the live path.
+In the private chat: `/start` or `/brand` picks a brand, and `/replay` pushes the 25 sample messages through the live path (staff-group members only). The first group the bot joins becomes the staff queue and is remembered in `staff_chat.txt`; it cannot be changed from a chat. After a second injection attempt a chat is restricted and only receives a fixed reply.
 
 ## Files
 
@@ -183,6 +184,8 @@ In the private chat: `/start` picks a brand, `/replay` pushes the 25 sample mess
 
 ## Known limits
 
+- Injection detection and the output gate are pattern lists. A false alarm sends a customer the warning text; a persistent attacker will eventually get past detection. The design limits the damage: the model has no actions and risky messages go to a human.
+- In the Telegram bench, the first group the bot is added to becomes the staff queue. Add it to your own group before sharing the bot's name.
 - `kb.json` holds placeholder facts. The task supplied no opening hours or policies, so real ones must replace them before real use.
 - The sample data has no sender or thread ID. Conversation history only exists in the Telegram bench, where the chat ID stands in for a thread.
 - Attachments are mentioned in two messages but are not in the data. The service flags them for a human.

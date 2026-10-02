@@ -14,17 +14,25 @@ Telegram test bench for the triage brain.
 Run:  python bot.py        (needs TELEGRAM_BOT_TOKEN in .env; OPENAI_API_KEY
                             is optional, without it every message goes to a human)
 
+Commands in the private chat:
+  /start or /brand   pick which brand you are writing to
+  /replay            push the 25 sample messages through the live path
+                     (only for members of the staff group)
+
+The staff group is the first group the bot is added to. It is remembered in
+staff_chat.txt and cannot be changed from a chat: to move it, stop the bot,
+delete that file and add the bot to the new group.
+
 The bot uses long polling: it keeps asking Telegram "anything new?", so it
 runs from a laptop with no public URL or hosting.
-Everything is kept in memory. Restarting the bot forgets open cards,
-conversation history and blocked chats.
+Everything else is kept in memory. Restarting the bot forgets open cards,
+conversation history and restricted chats.
 """
 
 import asyncio
 import json
 import os
 import time
-from datetime import datetime, timezone
 
 import httpx2 as httpx  # the HTTP library the openai package already installs
 
@@ -36,18 +44,29 @@ TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 API = f"https://api.telegram.org/bot{TOKEN}/"
 STAFF_FILE = HERE / "staff_chat.txt"       # remembers which group is the staff queue
 CORRECTIONS = HERE / "corrections.jsonl"   # one line per "Wrong call" press
+HISTORY_LINES = 30                         # lines kept per conversation
+
+
+def saved_staff_chat():
+    """The staff group id from staff_chat.txt, or None if missing or unreadable."""
+    try:
+        return int(STAFF_FILE.read_text().strip())
+    except (OSError, ValueError):
+        return None
+
 
 http = httpx.AsyncClient(timeout=70)       # longer than the 50s long-poll below
 brand_facts = load_brand_facts()
 openai_client = None                       # set in main() if a key exists
 
 # --- in-memory state -------------------------------------------------------
-staff_chat = int(STAFF_FILE.read_text()) if STAFF_FILE.exists() else None
+staff_chat = saved_staff_chat()
 brand_of = {}     # customer chat id -> brand they picked
-history_of = {}   # customer chat id -> last few lines: {"from": "customer" or "us", "text": ...}
-cards = {}        # staff card message id -> {"customer": chat id, "result": {...}}
+history_of = {}   # customer chat id -> recent lines: {"from": "customer" or "us", "text": ...}
+cards = {}        # (staff chat id, card message id) -> {"customer": chat id, "result": {...}}
 recent = {}       # customer chat id -> times of their recent messages (rate limit)
 strikes = {}      # customer chat id -> number of injection attempts
+replaying = set() # chats with a /replay in progress
 background = set()  # keeps running tasks alive until they finish
 
 ICON = {"escalate": "🔴", "route_internal": "🟣", "handoff": "🟡",
@@ -63,7 +82,7 @@ async def tg(method, **params):
     for attempt in (1, 2):
         try:
             reply = (await http.post(API + method, json=params)).json()
-        except httpx.HTTPError as problem:
+        except (httpx.HTTPError, ValueError) as problem:  # ValueError: answer was not JSON
             # Usually an idle connection that Telegram closed. Try once more
             # so a customer reply is not lost to a hiccup.
             print(f"telegram {method}: network problem ({type(problem).__name__}), attempt {attempt}")
@@ -93,10 +112,18 @@ async def say(chat, text, buttons=None):
 
 
 def remember(chat, who, text):
-    """Keep the last 8 lines of each conversation for context. `who` is set
-    by our code ("customer" or "us"), never taken from the message itself."""
+    """Keep recent lines of each conversation for context. `who` is set by our
+    code ("customer" or "us"), never taken from the message itself."""
     history_of.setdefault(chat, []).append({"from": who, "text": str(text)[:500]})
-    del history_of[chat][:-8]
+    del history_of[chat][:-HISTORY_LINES]
+
+
+async def is_staff(user):
+    """True if this Telegram user is a member of the staff group."""
+    if staff_chat is None:
+        return False
+    member = await tg("getChatMember", chat_id=staff_chat, user_id=user)
+    return bool(member) and member.get("status") in ("creator", "administrator", "member")
 
 
 # ---------------------------------------------------------------------------
@@ -116,22 +143,19 @@ def too_fast(chat):
     return len(times) > rules.MAX_MESSAGES_PER_MINUTE
 
 
-async def handle_customer(chat, record, show_id=False):
+async def handle_customer(chat, record, replay=False):
     """Triage one customer message, answer the customer, inform the staff."""
-    prefix = f"[{record.get('id')}] " if show_id else ""  # used by /replay
-
-    # A chat that kept trying injections is restricted: no model call at all.
-    if strikes.get(chat, 0) >= rules.INJECTION_STRIKES_BEFORE_BLOCK:
-        print(f"ignored message from restricted chat {chat}")
-        return
+    prefix = f"[{record.get('id')}] " if replay else ""
 
     await tg("sendChatAction", chat_id=chat, action="typing")
-    history = list(history_of.get(chat, []))
+    history = [] if replay else list(history_of.get(chat, []))  # each replay message stands alone
     result = await triage_message(record, 0, openai_client, DEFAULT_MODEL, brand_facts, history)
-    remember(chat, "customer", record.get("text"))
+    text = record.get("text") if isinstance(record.get("text"), str) else None
+    if text and not replay:
+        remember(chat, "customer", text)
 
     reply = result["reply_to_customer"]
-    if "injection_attempt" in result["risk_flags"]:
+    if "injection_attempt" in result["risk_flags"] and not replay:
         strikes[chat] = strikes.get(chat, 0) + 1
         if strikes[chat] >= rules.INJECTION_STRIKES_BEFORE_BLOCK:
             reply = rules.REPLY_BLOCKED
@@ -141,14 +165,15 @@ async def handle_customer(chat, record, show_id=False):
     # The customer always hears back at once.
     if reply:
         await say(chat, prefix + reply)
-        remember(chat, "us", reply)
+        if not replay:
+            remember(chat, "us", reply)
 
     if staff_chat is None:
         await say(chat, "(no staff group yet: add this bot to a group to see the staff side)")
         return
-    card = await say(staff_chat, card_text(result, record.get("text")), [("⚠️ Wrong call", "wrong")])
+    card = await say(staff_chat, card_text(result, text), [("⚠️ Wrong call", "wrong")])
     if card:
-        cards[card["message_id"]] = {"customer": chat, "result": result}
+        cards[(staff_chat, card["message_id"])] = {"customer": chat, "result": result}
 
 
 def card_text(result, text):
@@ -179,27 +204,29 @@ def card_text(result, text):
     return "\n".join(lines)
 
 
-async def replay(chat):
-    """Push the 25 task messages through the live path. The person who ran
-    /replay plays the customer for all of them."""
-    records = json.loads((HERE / "candidate_pack" / "messages.json").read_text(encoding="utf-8"))
-    await say(chat, f"Replaying {len(records)} messages. Each takes about 5 seconds "
-                    f"(the model call), so this runs for about 2 minutes.")
-    saved, saved_strikes = history_of.pop(chat, None), strikes.pop(chat, 0)
-    for number, record in enumerate(records, start=1):
-        history_of.pop(chat, None)        # each task message stands alone
-        strikes.pop(chat, None)
-        started = time.monotonic()
-        await handle_customer(chat, record, show_id=True)
-        print(f"replay {number}/{len(records)} done")
-        # A bot may send about 20 messages a minute to one group, so keep
-        # at least 3.2 seconds between cards. The model call usually takes longer.
-        await asyncio.sleep(max(0.0, 3.2 - (time.monotonic() - started)))
-    history_of.pop(chat, None)
-    strikes[chat] = saved_strikes
-    if saved:
-        history_of[chat] = saved
-    await say(chat, "Replay finished.")
+async def replay(chat, user):
+    """Push the 25 sample messages through the live path. The person who ran
+    /replay plays the customer for all of them. Staff only: it costs model
+    calls and fills the staff group."""
+    if not await is_staff(user):
+        return await say(chat, "/replay is only available to members of the staff group.")
+    if chat in replaying:
+        return await say(chat, "A replay is already running.")
+    replaying.add(chat)
+    try:
+        records = json.loads((HERE / "candidate_pack" / "messages.json").read_text(encoding="utf-8"))
+        await say(chat, f"Replaying {len(records)} messages. Each takes about 5 seconds "
+                        f"(the model call), so this runs for about 2 minutes.")
+        for number, record in enumerate(records, start=1):
+            started = time.monotonic()
+            await handle_customer(chat, record, replay=True)
+            print(f"replay {number}/{len(records)} done")
+            # A bot may send about 20 messages a minute to one group, so keep
+            # at least 3.2 seconds between cards. The model call usually takes longer.
+            await asyncio.sleep(max(0.0, 3.2 - (time.monotonic() - started)))
+        await say(chat, "Replay finished.")
+    finally:
+        replaying.discard(chat)
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +236,7 @@ async def replay(chat):
 async def handle_staff_message(message):
     """A staff member replied to a card: relay their words to the customer."""
     replied_to = message.get("reply_to_message", {}).get("message_id")
-    card = cards.get(replied_to)
+    card = cards.get((staff_chat, replied_to))
     text = message.get("text")
     if not card or not text or text.startswith("/"):
         return
@@ -230,8 +257,8 @@ async def handle_button(query):
         brand_of[chat] = data[6:]
         note = f"Brand set to {brand_of[chat]}"
         await say(chat, f"You are now a customer of {brand_of[chat]}. Send any message.")
-    elif data == "wrong":
-        card = cards.get(message.get("message_id"))
+    elif data == "wrong" and chat == staff_chat:
+        card = cards.get((chat, message.get("message_id")))
         if card is None:
             note = "This card is no longer active (bot was restarted)."
         else:
@@ -247,12 +274,38 @@ async def handle_button(query):
 # The main loop
 # ---------------------------------------------------------------------------
 
-async def set_staff_chat(chat):
-    """Make this group the staff queue and remember it across restarts."""
+async def register_staff_chat(chat):
+    """Make this group the staff queue, once. After that it cannot be changed
+    from a chat, so a stranger cannot redirect customer messages to their own group."""
     global staff_chat
+    if staff_chat is not None:
+        return
     staff_chat = chat
     STAFF_FILE.write_text(str(chat))
     await say(chat, "This group is now the staff queue. Decisions will appear here as cards.")
+
+
+async def handle_private_message(message, chat, text):
+    """A message in a private chat: a command, or a customer writing in."""
+    if too_fast(chat):
+        return await say(chat, rules.REPLY_SLOW_DOWN)  # no model call: slows down trial and error
+    if strikes.get(chat, 0) >= rules.INJECTION_STRIKES_BEFORE_BLOCK:
+        return await say(chat, rules.REPLY_BLOCKED)    # restricted: fixed reply, no model call
+    if text in ("/start", "/brand"):
+        return await ask_brand(chat)
+    if text == "/replay":
+        return await replay(chat, message["from"]["id"])
+    if chat not in brand_of:
+        return await ask_brand(chat)
+
+    record = {
+        "id": f"TG-{message['message_id']}",
+        "brand": brand_of[chat],
+        "channel": "telegram",
+        "received_at": message.get("date"),  # seconds since 1970; triage turns it into a date
+        "text": text,
+    }
+    await handle_customer(chat, record)
 
 
 async def handle_update(update):
@@ -270,8 +323,8 @@ async def handle_update(update):
             change = update["my_chat_member"]
             in_group = change["chat"]["type"] in ("group", "supergroup")
             joined = change["new_chat_member"]["status"] in ("member", "administrator")
-            if in_group and joined and staff_chat is None:  # first group wins
-                await set_staff_chat(change["chat"]["id"])
+            if in_group and joined:
+                await register_staff_chat(change["chat"]["id"])
             return
 
         message = update.get("message")
@@ -280,34 +333,14 @@ async def handle_update(update):
         chat = message["chat"]["id"]
         text = message.get("text") or message.get("caption")  # None for stickers, voice notes...
 
-        if message["chat"]["type"] != "private":
+        if message["chat"]["type"] == "private":
+            return await handle_private_message(message, chat, text)
+        if staff_chat is None:
             # The bot was already in the group before it started, so it never
-            # saw the "added" event: the first group message registers the
-            # group, and /staff moves the queue to the group it is typed in.
-            if staff_chat is None or (text or "").startswith("/staff"):
-                await set_staff_chat(chat)
-            elif chat == staff_chat:
-                await handle_staff_message(message)
-            return
-
-        if text in ("/start", "/brand"):
-            return await ask_brand(chat)
-        if text == "/replay":
-            return await replay(chat)
-        if chat not in brand_of:
-            return await ask_brand(chat)
-        if too_fast(chat):
-            return await say(chat, rules.REPLY_SLOW_DOWN)  # no model call: slows down trial and error
-
-        record = {
-            "id": f"TG-{message['message_id']}",
-            "brand": brand_of[chat],
-            "channel": "telegram",
-            # Telegram gives seconds since 1970; the model reads an ISO date better.
-            "received_at": datetime.fromtimestamp(message["date"], timezone.utc).isoformat(),
-            "text": text,
-        }
-        await handle_customer(chat, record)
+            # saw the "added" event: the first group message registers the group.
+            await register_staff_chat(chat)
+        elif chat == staff_chat:
+            await handle_staff_message(message)
     except Exception as problem:  # one bad update must not stop the bot
         print(f"update {update.get('update_id')} failed: {type(problem).__name__}: {problem}")
 
@@ -316,11 +349,13 @@ async def main():
     global openai_client
     if not TOKEN:
         raise SystemExit("TELEGRAM_BOT_TOKEN is missing from .env")
+    me = await tg("getMe")
+    if not me:
+        raise SystemExit("Telegram did not accept TELEGRAM_BOT_TOKEN.")
     openai_client = make_client()
     if openai_client is None:
         print("No OPENAI_API_KEY: every message will go to a human.")
 
-    me = await tg("getMe")
     print(f"Running as @{me['username']}. Staff group: {staff_chat or 'not set yet'}. Ctrl+C to stop.")
     offset = None
     while True:

@@ -2,6 +2,42 @@
 
 What changed and why, newest first.
 
+## 2 Oct 2026 — Bug hunt (step 4)
+
+An independent review (a second reviewer reading the code cold), a linter, a security scanner, a dependency audit and my own fuzzing. Everything below was reproduced before it was fixed.
+
+**Security**
+- *Slow-regex attack.* A message such as "ignore all" followed by 100 underscores took 4 seconds to scan, and longer strings took minutes, freezing the whole run. Cause: two patterns let a letter class and a separator class match the same character. Fixed by keeping them separate; a test now times hostile inputs.
+- *Padding bypass.* The scan read the raw text, but the model read the cleaned text, so 8,000 spaces could push an attack past the scan. The message is now cleaned first and the scan runs on exactly what the model reads.
+- *Unscanned fields.* `brand` was inserted into the trusted instructions and `channel` and `received_at` reached the model unchecked. Now only a known brand and channel and a real date are passed on.
+- *Output gate holes.* Opening hours ("10:00 to 20:00") let "20% off" and "Rs 10" through; "450 CAD", "four hundred dollars", "Approved.", "Yes, deal", Hinglish and Spanish confirmations, links on other domains, dosage advice and look-alike letters all passed. Amounts must now come from a money expression in the brand facts, and the list of blocked wording is wider. It is still a list.
+- *Staff queue takeover.* Anyone could add the bot to their own group, type `/staff`, and receive every customer message. The staff group is now set once and cannot be changed from a chat.
+- *`/replay` open to anyone.* Now limited to members of the staff group, one at a time.
+- *Wrong fixed reply.* A message flagged for self-harm plus injection got the ban warning. A person at risk now always gets the neutral urgent reply.
+
+**False alarms**
+- 15 ordinary phrases were flagged as attacks and would have received the warning ("please ignore my previous delivery instructions", "can you show me the instructions for the protein powder", "it looks like you are no longer delivering to my area"). The patterns were rewritten to require words that point at the bot's own instructions, and 27 such phrases are now a test.
+
+**Robustness**
+- One broken character in a message lost the whole output file; a non-UTF-8 or deeply nested input file gave a traceback. Both handled.
+- A dry run overwrote the results of a live run. It now writes `dry_run.json`.
+- A missing optional field in the API's usage data would have sent every message to a human.
+- `evaluate.py` passed when a must-reach-a-human message was missing, and ignored wrong actions in its exit code. It now fails on any mismatch.
+- A date or a short order number was recorded as a phone number.
+- The bot: a non-JSON Telegram answer stopped the loop; a corrupt `staff_chat.txt` stopped it starting; a restricted chat got silence instead of a reply.
+
+**Bloat**
+- `decide()` was one 100-line function; it is now four short ones. Removed an unused import, an unused variable, an unused price entry and a duplicated constant.
+
+**Tried and removed**
+- A rule that turned "ask the customer" into "hand off" whenever the reply mentioned the team. It made MSG-012 unstable, so it was taken out again.
+
+**Verified after the fixes**
+- `python test_triage.py` passes; linter and security scanner report nothing; no known vulnerabilities in the dependencies.
+- 25 messages: 25/25 on action, owner and urgency in four consecutive live runs.
+- 59 attacks: no harmful reply in the last four runs; 0 of 33 normal messages treated as attacks in the last three.
+- Cost is now $0.35 per 1,000 messages (slightly longer instructions).
+
 ## 2 Oct 2026 — Reply wording pass (step 3b)
 
 **Changed after the first full Telegram replay**
